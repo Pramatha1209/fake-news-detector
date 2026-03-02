@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Veritas AI{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
+    <h2 style="font-size: 1.75rem;">Analysis Dashboard</h2>
+    <p>Verify the authenticity of news articles using our machine learning engine.</p>
+</div>
+
+<div class="dashboard-grid">
+    <!-- Left Column: Analysis Form & Results -->
+    <div style="display: flex; flex-direction: column; gap: 2rem;">
+
+        <!-- Form Panel -->
+        <div class="glass-panel" style="padding: 2.5rem 2rem;">
+            <div class="panel-title">
+                <i class="ph ph-magnifying-glass" style="font-size: 1.25rem; color: var(--primary);"></i>
+                <h3 style="margin: 0;">New Scan</h3>
+            </div>
+
+            <form method="POST" id="analyze-form">
+                <div class="form-group">
+                    <label for="news">Text Analysis</label>
+                    <textarea id="news" name="news" class="form-control"
+                        placeholder="Paste the article content here..."></textarea>
+                </div>
+
+                <div
+                    style="text-align: center; color: var(--text-muted); margin: 1.5rem 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                    — or —
+                </div>
+
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label for="url">URL Analysis</label>
+                    <input type="url" id="url" name="url" class="form-control"
+                        placeholder="https://example.com/article">
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="submit-btn">
+                    <i class="ph ph-scan" style="font-size: 1.1rem;"></i> Start Analysis
+                </button>
+            </form>
+        </div>
+
+        <!-- Prediction Result Card -->
+        {% if result %}
+        <div class="result-card {% if result == 'Fake' %}result-fake{% else %}result-real{% endif %}">
+            <h3
+                style="margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 1.1rem;">
+                {% if result == 'Fake' %}
+                <i class="ph-fill ph-warning-circle" style="color: var(--danger); font-size: 1.5rem;"></i>
+                <span style="color: #F8FAFC;">Analysis flags this content as <strong style="color: var(--danger);">{{
+                        result }}</strong></span>
+                {% else %}
+                <i class="ph-fill ph-check-circle" style="color: var(--success); font-size: 1.5rem;"></i>
+                <span style="color: #F8FAFC;">Analysis flags this content as <strong style="color: var(--success);">{{
+                        result }}</strong></span>
+                {% endif %}
+            </h3>
+
+            <div style="font-size: 2rem; font-weight: 700; color: white; margin-top: 1.5rem; letter-spacing: -0.025em;">
+                {{ confidence }}%
+                <span
+                    style="display: block; font-size: 0.85rem; color: var(--text-muted); font-weight: 400; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">
+                    Confidence Score
+                </span>
+            </div>
+
+            <div class="confidence-meter">
+                <div class="confidence-fill" style="width: {{ confidence }}%;"></div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Right Column: User History -->
+    <div>
+        <div class="glass-panel" style="padding: 2.5rem 2rem; height: 100%;">
+            <div class="panel-title" style="margin-bottom: 1rem;">
+                <i class="ph ph-clock-counter-clockwise" style="font-size: 1.25rem; color: var(--text-muted);"></i>
+                <h3 style="margin: 0;">Recent Scans</h3>
+            </div>
+
+            {% if history %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th style="text-align: right;">Conf.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in history %}
+                        <tr>
+                            <td style="font-size: 0.85rem; color: var(--text-muted);">
+                                {{ item.timestamp.strftime('%b %d, %H:%M') }}
+                            </td>
+                            <td>
+                                <span
+                                    class="badge {% if item.prediction == 'Fake' %}badge-fake{% else %}badge-real{% endif %}">
+                                    {{ item.prediction }}
+                                </span>
+                            </td>
+                            <td style="font-weight: 500; text-align: right; font-size: 0.85rem;">
+                                {{ item.confidence|round|int }}%
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 4rem 0; color: var(--text-muted);">
+                <i class="ph ph-tray" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p style="font-size: 0.95rem;">No analysis history yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('analyze-form').addEventListener('submit', function () {
+        const btn = document.getElementById('submit-btn');
+        btn.innerHTML = '<i class="ph ph-spinner-gap ph-spin" style="font-size: 1.1rem;"></i> Analyzing...';
+        btn.style.opacity = '0.8';
+        btn.style.cursor = 'wait';
+    });
+</script>
+{% endblock %}

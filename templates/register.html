@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Veritas AI{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div style="display: flex; justify-content: center; margin-bottom: 1.5rem;">
+            <div
+                style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); padding: 1rem; border-radius: 16px; display: inline-flex;">
+                <i class="ph ph-user-plus" style="font-size: 2.5rem; color: var(--primary);"></i>
+            </div>
+        </div>
+
+        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Create Account</h2>
+        <p style="margin-bottom: 2rem;">Get started with enterprise-grade content verification.</p>
+
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="form-group">
+                <label for="username">Work Username</label>
+                <input type="text" id="username" name="username" class="form-control" required autocomplete="username"
+                    placeholder="e.g. john.doe">
+            </div>
+            <div class="form-group">
+                <label for="password">Secure Password</label>
+                <input type="password" id="password" name="password" class="form-control" required
+                    autocomplete="new-password" placeholder="••••••••">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 1rem; padding: 1rem;">
+                Create Account
+            </button>
+        </form>
+
+        <div
+            style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+            Already have an account?
+            <a href="{{ url_for('login') }}" style="font-weight: 500;">Sign In</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

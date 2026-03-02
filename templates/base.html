@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Veritas AI - News Verification{% endblock %}</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- Phosphor Icons for a cleaner, modern look instead of FontAwesome -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="{{ url_for('dashboard') }}" class="navbar-brand">
+            <i class="ph ph-shield-check" style="color: var(--primary); font-size: 1.5rem;"></i>
+            Veritas AI
+        </a>
+        <div class="nav-links">
+            {% if current_user.is_authenticated %}
+            {% if current_user.role == 'admin' %}
+            <a href="{{ url_for('admin') }}" style="display: flex; align-items: center; gap: 0.4rem;">
+                <i class="ph ph-kanban"></i> Admin
+            </a>
+            {% endif %}
+            <span style="color: var(--text-muted); font-size: 0.9rem;">
+                {{ current_user.username }}
+            </span>
+            <a href="{{ url_for('logout') }}" class="btn btn-secondary"
+                style="padding: 0.4rem 1rem; font-size: 0.85rem;">
+                Logout
+            </a>
+            {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}" class="btn btn-primary"
+                style="padding: 0.4rem 1.2rem; font-size: 0.85rem;">
+                Sign Up
+            </a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{% if category == 'error' %}error{% else %}success{% endif %}">
+            {% if category == 'error' %}
+            <i class="ph ph-warning-circle" style="font-size: 1.2rem;"></i>
+            {% else %}
+            <i class="ph ph-check-circle" style="font-size: 1.2rem;"></i>
+            {% endif %}
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+
+</html>

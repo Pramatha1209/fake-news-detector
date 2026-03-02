@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - Veritas AI{% endblock %}
+
+{% block content %}
+<div
+    style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
+    <div>
+        <h2 style="font-size: 1.75rem;">Admin Overview</h2>
+        <p>Monitor platform operations and model performance metrics.</p>
+    </div>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary" style="width: auto; padding: 0.6rem 1rem;">
+        <i class="ph ph-arrow-left"></i> User Dashboard
+    </a>
+</div>
+
+<!-- Stat Cards -->
+<div
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+    <div class="glass-panel" style="padding: 1.5rem 2rem; display: flex; align-items: center; gap: 1.5rem;">
+        <div
+            style="background: rgba(59, 130, 246, 0.15); color: var(--primary); padding: 1rem; border-radius: 12px; display: flex;">
+            <i class="ph ph-users" style="font-size: 1.75rem;"></i>
+        </div>
+        <div>
+            <div
+                style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                Total Users</div>
+            <div style="font-size: 1.75rem; font-weight: 600; color: #F8FAFC; letter-spacing: -0.025em;">{{ users|length
+                }}</div>
+        </div>
+    </div>
+
+    <div class="glass-panel" style="padding: 1.5rem 2rem; display: flex; align-items: center; gap: 1.5rem;">
+        <div
+            style="background: var(--success-bg); color: var(--success); padding: 1rem; border-radius: 12px; display: flex;">
+            <i class="ph ph-cpu" style="font-size: 1.75rem;"></i>
+        </div>
+        <div>
+            <div
+                style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                Model Accuracy</div>
+            <div style="font-size: 1.75rem; font-weight: 600; color: #F8FAFC; letter-spacing: -0.025em;">{{ accuracy }}%
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-panel" style="padding: 1.5rem 2rem; display: flex; align-items: center; gap: 1.5rem;">
+        <div
+            style="background: rgba(139, 92, 246, 0.15); color: #8B5CF6; padding: 1rem; border-radius: 12px; display: flex;">
+            <i class="ph ph-chart-line-up" style="font-size: 1.75rem;"></i>
+        </div>
+        <div>
+            <div
+                style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                Total Analyses</div>
+            <div style="font-size: 1.75rem; font-weight: 600; color: #F8FAFC; letter-spacing: -0.025em;">{{
+                history|length }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-grid" style="grid-template-columns: 1fr;">
+
+    <!-- User Management Table -->
+    <div class="glass-panel" style="padding: 2.5rem 2rem; margin-bottom: 2rem;">
+        <div class="panel-title">
+            <i class="ph ph-address-book" style="font-size: 1.25rem; color: var(--text-muted);"></i>
+            <h3 style="margin: 0;">User Accounts</h3>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">ID</th>
+                        <th style="width: 50%;">Username</th>
+                        <th style="width: 40%;">Privileges</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td style="color: var(--text-muted); font-size: 0.85rem;">#{{ u.id }}</td>
+                        <td style="font-weight: 500;">{{ u.username }}</td>
+                        <td>
+                            {% if u.role == 'admin' %}
+                            <span class="badge"
+                                style="background: rgba(139, 92, 246, 0.15); color: #C4B5FD; border: 1px solid rgba(139, 92, 246, 0.3);">Administrator</span>
+                            {% else %}
+                            <span class="badge"
+                                style="background: rgba(148, 163, 184, 0.1); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.2);">User</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Global Analysis Logs -->
+    <div class="glass-panel" style="padding: 2.5rem 2rem;">
+        <div class="panel-title">
+            <i class="ph ph-list-dashes" style="font-size: 1.25rem; color: var(--text-muted);"></i>
+            <h3 style="margin: 0;">Global Analysis Logs</h3>
+        </div>
+
+        <div class="table-container" style="max-height: 500px; overflow-y: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">Timestamp</th>
+                        <th style="width: 10%;">User</th>
+                        <th style="width: 15%;">Status</th>
+                        <th style="width: 10%;">Conf.</th>
+                        <th style="width: 50%;">Content Snippet</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in history %}
+                    <tr>
+                        <td style="font-size: 0.8rem; color: var(--text-muted);">
+                            {{ item.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                        </td>
+                        <td>
+                            <span class="badge"
+                                style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-muted);">
+                                ID-{{ item.user_id }}
+                            </span>
+                        </td>
+                        <td>
+                            <span
+                                class="badge {% if item.prediction == 'Fake' %}badge-fake{% else %}badge-real{% endif %}">
+                                {{ item.prediction }}
+                            </span>
+                        </td>
+                        <td style="font-weight: 500; font-size: 0.85rem;">
+                            {{ item.confidence|round|int }}%
+                        </td>
+                        <td>
+                            <div class="text-truncate" style="font-size: 0.85rem; color: var(--text-main);"
+                                title="{{ item.news_text }}">
+                                {{ item.news_text }}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
