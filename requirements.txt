@@ -1,0 +1,10 @@
+Flask
+Flask-Login
+Flask-SQLAlchemy
+gunicorn
+scikit-learn
+pandas
+numpy
+joblib
+beautifulsoup4
+requests
